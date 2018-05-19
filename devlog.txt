@@ -1,0 +1,15 @@
+5-19-2018
+I read through kShell and the instructions.
+Searched up interface: Collection of abstract methods with no implementations.
+Created ssh-key for GitHub
+Created kShelly repository on GitHub
+Notes:
+    - create new file
+        ->git add -A
+    - made a little progress
+        ->git commit -am "what you changed and what you're working on"
+    - made a lot of progress
+        ->git push
+        -run git push to save results on GitHub
+Created three class: abstract Base, generic GFile, and GDirectory
+
