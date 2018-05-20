@@ -3,7 +3,7 @@ public abstract class Base {
     double size;
     public Base()
     {
-        
+
 
     }
     public boolean isFile(){
