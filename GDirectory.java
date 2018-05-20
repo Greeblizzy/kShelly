@@ -1,9 +1,9 @@
 public class GDirectory extends Base
 {
-    Set<Base> baseSet;
+    private Set<Base> files;
     private Base parent;
-    public GDirectory(String dirName)
+    public GDirectory(String directoryName)
     {
-        super(dirName);
+        super(directoryName);
     }
 }
