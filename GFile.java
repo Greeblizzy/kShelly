@@ -9,4 +9,8 @@ public class GFile<T> extends Base
     {
         this.obj = obj;
     }
+    public GFile(String name)
+    {
+        GFile.name = name;
+    }
 }
