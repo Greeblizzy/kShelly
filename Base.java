@@ -1,6 +1,6 @@
 public abstract class Base {
-    String  name;
-    double size;
+    private String  name;
+    private int size;
     public Base(String name)
     {
         this.name = name;
@@ -9,7 +9,7 @@ public abstract class Base {
     {
         this.name = name;
     }
-    public void setSize(double size)
+    public void setSize(int size)
     {
         this.size = size;
     }
@@ -17,11 +17,9 @@ public abstract class Base {
     {
         return name;
     }
-    public double getSize()
+    public int getSize()
     {
         return size;
     }
-    public boolean isFile(){
-        return false;
-    }
+    public abstract boolean isFile(){};
 }
