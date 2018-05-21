@@ -11,7 +11,7 @@ Notes:
     - made a lot of progress
         ->git push
         -run git push to save results on GitHub
-Created three class: abstract Base, generic GFile, and GDirectory
+Created three class: abstract Shell.Base, generic Shell.GFile, and Shell.GDirectory
 
 5-20-2018
 ssh key didn't work; I ran

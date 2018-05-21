@@ -1,3 +1,5 @@
+package Shell;
+
 public abstract class Base {
     private String  name;
     private int size;
@@ -5,21 +7,24 @@ public abstract class Base {
     {
         this.name = name;
     }
+
+    public String getName()
+    {
+        return name;
+    }
     public void setName(String name)
     {
         this.name = name;
+    }
+
+    public int getSize()
+    {
+        return size;
     }
     public void setSize(int size)
     {
         this.size = size;
     }
-    public String getName()
-    {
-        return name;
-    }
-    public int getSize()
-    {
-        return size;
-    }
-    public abstract boolean isFile(){};
+
+    public abstract boolean isDirectory();
 }
