@@ -22,3 +22,10 @@ Thus, I guess manual sign in for me:
     git config --global user.email "[lisazheng123@gmail.com]"
 Mostly just figured out how github worked again with the add, commits and push.
 
+5-21-2018
+lost
+- ssh key was installed properly
+- project was restructured
+
+5-22-2018
+- completed the functions of 'man' and 'touch' command

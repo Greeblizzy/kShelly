@@ -15,4 +15,8 @@ public class GDirectory extends Base {
     public boolean isDirectory() {
         return true;
     }
+
+    public void add(Base b) {
+        files.add(b);
+    }
 }
