@@ -5,13 +5,12 @@ import Shell.GFile;
 import java.util.*;
 
 public class Driver {
-    private static final Map<String, String> man =new HashMap<>();
+    private static final Map<String, String> man = new HashMap<>();
     private static GDirectory root;
 
     public static void main(String[] args) {
         setUpManual(man);
-        GDirectory currDir = root = new GDirectory("/");
-
+        GDirectory currDir = root = new GDirectory("/", null);
         // Process incoming user commands
         Scanner sc = new Scanner(System.in);    // Intellij does auto imports
         String[] line;
@@ -34,11 +33,21 @@ public class Driver {
                 currDir.add(gFile);
                 break;
             case "rm":      // line = ["rm", "<fileName>"]      process it
-                break;
-            default:
-                // error case
-        }
+                if (line.length != 2) {
+                    System.out.println("Expected: rm <fileName");
+                    break;
+                }
 
+                if (currDir.containsFile(line[1]) )
+                    currDir.remove(line[1]);
+                else
+                    System.out.println("File Not Found");
+                break;
+            case "mkdir":
+                // commit first
+            default:
+                System.out.println("Unrecognized Command");
+        }
     }
 
     private static void setUpManual(Map<String, String> man) {

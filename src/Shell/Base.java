@@ -26,5 +26,5 @@ public abstract class Base {
         this.size = size;
     }
 
-    public abstract boolean isDirectory();
+    public abstract boolean isFile();
 }

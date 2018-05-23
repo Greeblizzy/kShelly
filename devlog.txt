@@ -28,4 +28,9 @@ lost
 - project was restructured
 
 5-22-2018
-- completed the functions of 'man' and 'touch' command
+- Completed the functions of 'man' and 'touch' command
+
+5-23-2018
+- Completed the rm <fileName> command
+- Changed GDirectory Set -> Map for files
+- Introduced to stream
