@@ -9,7 +9,7 @@ public class GDirectory extends Base {
 
     public GDirectory(String directoryName, GDirectory parent) {
         super(directoryName);
-        this.parent = parent;
+        this.parent = parent == null ? this : parent;
         files = new HashMap<>();
     }
 
@@ -26,8 +26,8 @@ public class GDirectory extends Base {
         files.remove(name);
     }
 
-    public boolean containsFile(String name) {
-        return files.values().stream().filter(Base::isFile)  // consider only GFile
+    public boolean contains(String name) {
+        return files.values().stream()
                 .map(Base::getName)                 // convert every file -> name
                 .anyMatch(f -> f.equals(name));     // if any matches given name
         // files currently contains files and folders, but I only want its name
@@ -35,4 +35,16 @@ public class GDirectory extends Base {
         // map? what to what?  Maps Base (file/dir) -> String
     }
 
+    public boolean containsFile(String name) {
+        return contains(name) && files.get(name).isFile();
+    }
+
+    public boolean containsDirectory(String name) {
+        return contains(name) && !files.get(name).isFile();
+    }
+
+    @Override
+    public String toString() {
+        return String.format("<from %s -> %s>", parent.getName(), files);
+    }
 }

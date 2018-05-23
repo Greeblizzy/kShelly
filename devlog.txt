@@ -34,3 +34,4 @@ lost
 - Completed the rm <fileName> command
 - Changed GDirectory Set -> Map for files
 - Introduced to stream
+- Decent amount running
