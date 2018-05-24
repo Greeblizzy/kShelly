@@ -13,6 +13,10 @@ public class GDirectory extends Base {
         files = new HashMap<>();
     }
 
+    public GDirectory getParent() {
+        return parent;
+    }
+
     @Override
     public boolean isFile() {
         return false;
@@ -27,12 +31,7 @@ public class GDirectory extends Base {
     }
 
     public boolean contains(String name) {
-        return files.values().stream()
-                .map(Base::getName)                 // convert every file -> name
-                .anyMatch(f -> f.equals(name));     // if any matches given name
-        // files currently contains files and folders, but I only want its name
-        // so this outputs a list of its names
-        // map? what to what?  Maps Base (file/dir) -> String
+        return files.containsKey(name);
     }
 
     public boolean containsFile(String name) {
@@ -41,6 +40,14 @@ public class GDirectory extends Base {
 
     public boolean containsDirectory(String name) {
         return contains(name) && !files.get(name).isFile();
+    }
+
+    public Base get(String name) {
+        return files.get(name);
+    }
+
+    public boolean isEmpty() {
+        return files.isEmpty();
     }
 
     @Override

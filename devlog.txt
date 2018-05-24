@@ -35,3 +35,6 @@ lost
 - Changed GDirectory Set -> Map for files
 - Introduced to stream
 - Decent amount running
+
+5-24-2018
+- Completed commands rmdir <directoryName>, echo content, and pwd
