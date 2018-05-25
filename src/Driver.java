@@ -1,3 +1,4 @@
+import Shell.Constants;
 import Shell.GDirectory;
 import Shell.GFile;
 
@@ -14,7 +15,7 @@ public class Driver {
         Scanner sc = new Scanner(System.in);    // Intellij does auto imports
         GDirectory currDir = root = new GDirectory("/", null);
 
-        System.out.println("Welcome to kShelly!");
+        System.out.println(Constants.welcomeText);
         // Process incoming user commands
         while (!quit) {
             System.out.print("\n>");
@@ -33,10 +34,10 @@ public class Driver {
                     }
 
                     if (currDir.contains(line[1])) {
-                        System.out.println("File/Directory with such name exists");
+                        System.out.println(Constants.missingFileDir);
                         break;
                     }
-                    GFile<String> gFile = new GFile<>(line[1]);
+                    GFile gFile = new GFile(line[1]);
                     currDir.add(gFile);
                     break;
                 case "rm":      // line = ["rm", "<fileName>"]      process it
@@ -59,7 +60,7 @@ public class Driver {
                     if (!currDir.contains(line[1]))
                         currDir.add(new GDirectory(line[1], currDir));
                     else
-                        System.out.println("File/Directory with such name exists");
+                        System.out.println(Constants.missingFileDir);
                     break;
                 case "rmdir":
                     if (line.length != 2) {
@@ -110,8 +111,46 @@ public class Driver {
                     System.out.println(presentWorkingDirectory.toString());
                     break;
                 case "write":
+                    if (!line[0].equals("write")) {
+                        System.out.println("Expected: write <fileName> <content>");
+                        break;
+                    }
 
+                    if (currDir.containsDirectory(line[1])) {
+                        System.out.println(line[1] + " is actually a directory");
+                        break;
+                    }
+                    if (!currDir.containsFile(line[1])) {
+                        System.out.println("File doesn't exist");
+                        break;
+                    }
+                    String content = "";
+                    for (int wordIndex = 2; wordIndex < line.length; wordIndex++) {
+                        content += line[wordIndex] + " ";
+                    }
+                    if (((GFile) currDir.get(line[1])).getContent() != null) {
+                        ((GFile) currDir.get(line[1])).append(content);
+                    } else {
+                        ((GFile) currDir.get(line[1])).setContent(content);
+                    }
                     break;
+                case "cat":
+                    if (line.length != 2) {
+                        System.out.println("Expected: cat <fileName>");
+                        break;
+                    }
+
+                    if (currDir.containsDirectory(line[1])) {
+                        System.out.println(line[1] + " is actually a directory");
+                        break;
+                    }
+                    if (currDir.containsFile(line[1])) {
+                        System.out.println(((GFile) currDir.get(line[1])).getContent());
+                        break;
+                    } else {
+                        System.out.println("File doesn't exist");
+                        break;
+                    }
                 case "quit":
                     quit = true;
                     break;

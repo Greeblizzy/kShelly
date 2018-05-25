@@ -1,18 +1,21 @@
 package Shell;
 
-public class GFile<T> extends Base {
-    private T obj;
+public class GFile extends Base {
+    private String content;
     public GFile(String name) {
        super(name);
     }
 
-    public T getObj()
+    public String getContent()
     {
-        return obj;
+        return content;
     }
-    public void setObj(T obj)
+    public void setContent(String content) {
+        this.content = content;
+    }
+    public void append(String content)
     {
-        this.obj = obj;
+        this.content += content;
     }
 
     @Override
