@@ -1,177 +1,173 @@
 import Shell.Constants;
+import Shell.FileType;
 import Shell.GDirectory;
 import Shell.GFile;
 
+import javax.naming.CompositeName;
+import java.nio.file.InvalidPathException;
 import java.util.*;
+import java.util.concurrent.ConcurrentSkipListMap;
 
 public class Driver {
     private static final Map<String, String> manPages = new HashMap<>();
     private static GDirectory root;
+    private static GDirectory currDir;
+    private static boolean quit = false;
 
     public static void main(String[] args) {
-        String[] line;
-        boolean quit = false;
         setUpManual();
         Scanner sc = new Scanner(System.in);    // Intellij does auto imports
-        GDirectory currDir = root = new GDirectory("/", null);
+        currDir = root = new GDirectory("/", null);
 
         System.out.println(Constants.welcomeText);
         // Process incoming user commands
         while (!quit) {
             System.out.print("\n>");
             // reads input line, stores the split array on space in line
-            // considers the first word -> lower case for switch
-            switch ((line = sc.nextLine().split(" "))[0].toLowerCase()) {
-                case "man":     // line = ["manPages", "<content>"]      process it
-                    System.out.println(line.length == 2 ?
-                            manPages.getOrDefault(line[1], "Invalid Command") :
-                            "Expected: man <command>");
-                    break;
-                case "touch":       // line = ["touch", "<fileName>"]      process it
-                    if (line.length != 2) {
-                        System.out.println("Expected: touch <fileName>");
-                        break;
-                    }
-
-                    if (currDir.contains(line[1])) {
-                        System.out.println(Constants.missingFileDir);
-                        break;
-                    }
-                    GFile gFile = new GFile(line[1]);
-                    currDir.add(gFile);
-                    break;
-                case "rm":      // line = ["rm", "<fileName>"]      process it
-                    if (line.length != 2) {
-                        System.out.println("Expected: rm <fileName");
-                        break;
-                    }
-
-                    if (currDir.containsFile(line[1]))
-                        currDir.remove(line[1]);
-                    else
-                        System.out.println("File Not Found");
-                    break;
-                case "mkdir":
-                    if (line.length != 2) {
-                        System.out.println("Expected mkdir <fileName>");
-                        break;
-                    }
-
-                    if (!currDir.contains(line[1]))
-                        currDir.add(new GDirectory(line[1], currDir));
-                    else
-                        System.out.println(Constants.missingFileDir);
-                    break;
-                case "rmdir":
-                    if (line.length != 2) {
-                        System.out.println("Expected rmdir <directoryName>");
-                        break;
-                    }
-
-                    if (currDir.containsDirectory(line[1]) &&
-                            ((GDirectory) currDir.get(line[1])).isEmpty())
-                        currDir.remove(line[1]);
-                    else
-                        System.out.println("Directory Not Found");
-                    break;
-                case "ls": case "ll":   // skip ll for now
-                    System.out.println(currDir);
-                    break;
-                case "echo":
-                    if (line.length != 2) {
-                        System.out.println("Expected: echo content");
-                        break;
-                    }
-
-                    System.out.println(line[1]);
-                    break;
-                case "cd":
-                    if (line.length != 2) {
-                        System.out.println("Expected cd <directoryName>");
-                        break;
-                    }
-
-                    if (currDir.containsDirectory(line[1]))
-                        currDir = (GDirectory) currDir.get(line[1]);
-                    else if (line[1].equals("/"))
-                        currDir = root;
-                    else if (line[1].equals(".."))
-                        currDir = currDir.getParent();
-                    else if (!line[1].equals("."))
-                        System.out.println("Directory Not Found");
-                    break;
-                case "pwd":
-                    GDirectory temp = currDir;
-                    StringBuilder presentWorkingDirectory = new StringBuilder();
-                    do {
-                        presentWorkingDirectory.insert(0, temp.getName());
-                        if (currDir != root)
-                            presentWorkingDirectory.insert(0, "/");
-                    } while ((temp = temp.getParent()) != root);
-                    System.out.println(presentWorkingDirectory.toString());
-                    break;
-                case "write":
-                    if (!line[0].equals("write")) {
-                        System.out.println("Expected: write <fileName> <content>");
-                        break;
-                    }
-
-                    if (currDir.containsDirectory(line[1])) {
-                        System.out.println(line[1] + " is actually a directory");
-                        break;
-                    }
-                    if (!currDir.containsFile(line[1])) {
-                        System.out.println("File doesn't exist");
-                        break;
-                    }
-                    String content = "";
-                    for (int wordIndex = 2; wordIndex < line.length; wordIndex++) {
-                        content += line[wordIndex] + " ";
-                    }
-                    if (((GFile) currDir.get(line[1])).getContent() != null) {
-                        ((GFile) currDir.get(line[1])).append(content);
-                    } else {
-                        ((GFile) currDir.get(line[1])).setContent(content);
-                    }
-                    break;
-                case "cat":
-                    if (line.length != 2) {
-                        System.out.println("Expected: cat <fileName>");
-                        break;
-                    }
-
-                    if (currDir.containsDirectory(line[1])) {
-                        System.out.println(line[1] + " is actually a directory");
-                        break;
-                    }
-                    if (currDir.containsFile(line[1])) {
-                        System.out.println(((GFile) currDir.get(line[1])).getContent());
-                        break;
-                    } else {
-                        System.out.println("File doesn't exist");
-                        break;
-                    }
-                case "quit":
-                    quit = true;
-                    break;
-                default:
-                    System.out.println("Unrecognized Command");
+            try {
+                String[] line = sc.nextLine().split(" ");
+                String ouput = runCommand(line);
+                System.out.println(ouput);
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
             }
         }
     }
 
+    private static String runCommand(String... line) throws Exception { //what does ... mean? String[] Is there a difference? yes
+        // can pass in an array as runCommand("1", "2", "3") oh ok got it; also forces it to be the last param in a mthod
+        String output = "";
+
+        // considers the first word -> lower case for switch
+        switch (line[0].toLowerCase()) {
+            case "man":     // line = ["manPages", "<content>"]      process it
+                assertEQ(2, line.length, "Expected: man <command>");
+                output = manPages.getOrDefault(line[1], "Invalid Command");
+                break;
+            case "touch":       // line = ["touch", "<fileName>"]      process it
+                assertEQ(2, line.length, "Expected: touch <fileName>");
+                if (currDir.contains(line[1]))
+                    throw new Exception("Naming Conflict");
+
+                // TODO: support file extensions
+                GFile gFile = new GFile(line[1], FileType.TXT);
+                currDir.add(gFile);
+                break;
+            case "rm":      // line = ["rm", "<fileName>"]      process it
+                assertEQ(2, line.length, "Expected: rm <fileName>");
+                if (!currDir.containsFile(line[1]))
+                    throw new Exception("File Not Found");
+
+                currDir.remove(line[1]);
+                break;
+            case "mkdir":
+                assertEQ(2, line.length, "Expected: mkdir <directoryName>");
+                if (currDir.contains(line[1]))
+                    throw new Exception(Constants.missingFileDir);
+
+                currDir.add(new GDirectory(line[1], currDir));
+                break;
+            case "rmdir":
+                assertEQ(2, line.length, "Expected: rmdir <directoryName>");
+                if (!currDir.containsDirectory(line[1]) || !((GDirectory) currDir.get(line[1])).isEmpty())
+                    throw new Exception("Directory not found");
+
+                currDir.remove(line[1]);
+                break;
+            case "ls": case "ll":   // skip ll for now
+                output = currDir.toString();
+                break;
+            case "echo":
+                StringBuilder sb = new StringBuilder();
+                for (int i = 1; i < line.length; i++)
+                    sb.append(line[i]).append(" ");
+
+                sb.setLength(sb.length() -1);
+                output = sb.toString();
+                break;
+            case "cd":
+                assertEQ(2, line.length, "Expected: cd <directoryName>");
+                processCD(line[1]);
+                break;
+            case "pwd":
+                GDirectory temp = currDir;
+                StringBuilder presentWorkingDirectory = new StringBuilder();
+                do {
+                    presentWorkingDirectory.insert(0, temp.getName());
+                    if (currDir != root)
+                        presentWorkingDirectory.insert(0, "/");
+                } while ((temp = temp.getParent()) != root);
+
+                output = presentWorkingDirectory.toString();
+                break;
+            case "write":
+                if (currDir.containsDirectory(line[1]))
+                    throw new Exception(line[1] + " is actually a directory");
+                if (!currDir.containsFile(line[1]))
+                    throw new Exception("File doesn't exist");
+
+                StringBuilder content = new StringBuilder();
+                for (int wordIndex = 2; wordIndex < line.length; wordIndex++)
+                    content.append(line[wordIndex]).append(" ");
+
+                ((GFile) currDir.get(line[1])).append(content.toString());
+                break;
+            case "cat":
+                assertEQ(2, line.length, "Expected: cat <fileName");
+                if (currDir.containsDirectory(line[1]))
+                    throw new Exception(line[1] + " is actually a directory");
+                if (!currDir.containsFile(line[1]))
+                    throw new Exception("File doesn't exist");
+
+                output = ((GFile) currDir.get(line[1])).getContent();
+                break;
+            case "quit":
+                quit = true;
+                break;
+            default:
+                output = "Unrecognized Command";
+        }
+        return output;
+    }
+
+    // all these strings need to move over to Constants
     private static void setUpManual() {
-        manPages.put("manPages", "prints out a help menu for a given command");
-        manPages.put("touch", "creates a file named <fileName>");
-        manPages.put("rm", "removes the file named <fileName>");
-        manPages.put("mkdir", "creates a folder named <directoryName>");
-        manPages.put("rmdir", "removes the folder named <directoryName>");
-        manPages.put("ls", "lists all files and directories in current folder");
-        manPages.put("ll", "lists all files and directories in greater detail");
-        manPages.put("echo", "outputs content to terminal output");
-        manPages.put("cd", "changes directory to given folder");
-        manPages.put("pwd", "prints present working directory");
-        manPages.put("write", "writes <content> to <fileName>"); // takes 2 param
-        manPages.put("quit", "logout");
+        manPages.put(Constants.MAN, Constants.MAN_DESC);
+        manPages.put(Constants.TOUCH, Constants.TOUCH_DESC);
+        manPages.put(Constants.RM, Constants.RM_DESC);
+        manPages.put(Constants.MKDIR, Constants.MKDIR_DESC);
+        manPages.put(Constants.RMDIR, Constants.RMDIR_DESC);
+        manPages.put(Constants.LS, Constants.LS_DESC);
+        manPages.put(Constants.LL, Constants.LL_DESC);
+        manPages.put(Constants.ECHO, Constants.ECHO_DESC);
+        manPages.put(Constants.CD, Constants.CD_DESC);
+        manPages.put(Constants.PWD, Constants.PWD_DESC);
+        manPages.put(Constants.WRITE, Constants.WRITE_DESC);
+        manPages.put(Constants.QUIT, Constants.QUIT_DESC);
+    }
+
+    private static void assertEQ(int expected, int actual, String errorMsg) throws Exception{
+        if (expected != actual)
+            throw new Exception(errorMsg);
+    }
+
+    private static void assertBase(boolean exists, String path, boolean isFile, String errorMsg) throws Exception {
+        if (exists != (isFile ? currDir.containsFile(path) : currDir.containsDirectory(path))) //I lost you here
+            throw new Exception(errorMsg);
+    }
+
+    private static void processCD(String path) throws InvalidPathException {
+        switch (path) {
+            case ("/"):
+                currDir = root;
+                break;
+            case ".":   // empty
+                break;
+            case (".."):
+                currDir = currDir.getParent();
+                break;
+            default:
+                throw new InvalidPathException(path, "Directory Not Found");
+        }
     }
 }

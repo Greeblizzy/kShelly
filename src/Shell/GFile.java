@@ -2,12 +2,15 @@ package Shell;
 
 public class GFile extends Base {
     private String content;
-    public GFile(String name) {
+    private FileType type;
+
+    public GFile(String name, FileType type) {
        super(name);
+       this.content = "";
+       this.type = type;
     }
 
-    public String getContent()
-    {
+    public String getContent() {
         return content;
     }
     public void setContent(String content) {
@@ -27,4 +30,5 @@ public class GFile extends Base {
     public String toString() {
         return String.format("GFile(%s)", getName());
     }
+    //%s puts in the corresponding arg (getName()) into that position
 }
