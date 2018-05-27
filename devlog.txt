@@ -49,3 +49,7 @@ What I'm working on:
 - added final variable commands and description in the constant class
 - setUpManual() in Driver.java now uses the constant class
 - refactored the methods in Driver.java
+
+5-27-2018
+- Made the strings in the switch statements contain constants
+- Will start to work on part 2 tomorrow
