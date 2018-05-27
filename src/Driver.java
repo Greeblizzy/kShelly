@@ -40,11 +40,11 @@ public class Driver {
 
         // considers the first word -> lower case for switch
         switch (line[0].toLowerCase()) {
-            case "man":     // line = ["manPages", "<content>"]      process it
+            case Constants.MAN:     // line = ["manPages", "<content>"]      process it
                 assertEQ(2, line.length, "Expected: man <command>");
                 output = manPages.getOrDefault(line[1], "Invalid Command");
                 break;
-            case "touch":       // line = ["touch", "<fileName>"]      process it
+            case Constants.TOUCH:       // line = ["touch", "<fileName>"]      process it
                 assertEQ(2, line.length, "Expected: touch <fileName>");
                 if (currDir.contains(line[1]))
                     throw new Exception("Naming Conflict");
@@ -53,31 +53,31 @@ public class Driver {
                 GFile gFile = new GFile(line[1], FileType.TXT);
                 currDir.add(gFile);
                 break;
-            case "rm":      // line = ["rm", "<fileName>"]      process it
+            case Constants.RM:      // line = ["rm", "<fileName>"]      process it
                 assertEQ(2, line.length, "Expected: rm <fileName>");
                 if (!currDir.containsFile(line[1]))
                     throw new Exception("File Not Found");
 
                 currDir.remove(line[1]);
                 break;
-            case "mkdir":
+            case Constants.MKDIR:
                 assertEQ(2, line.length, "Expected: mkdir <directoryName>");
                 if (currDir.contains(line[1]))
                     throw new Exception(Constants.missingFileDir);
 
                 currDir.add(new GDirectory(line[1], currDir));
                 break;
-            case "rmdir":
+            case Constants.RMDIR:
                 assertEQ(2, line.length, "Expected: rmdir <directoryName>");
                 if (!currDir.containsDirectory(line[1]) || !((GDirectory) currDir.get(line[1])).isEmpty())
                     throw new Exception("Directory not found");
 
                 currDir.remove(line[1]);
                 break;
-            case "ls": case "ll":   // skip ll for now
+            case Constants.LS: case Constants.LL:   // skip ll for now
                 output = currDir.toString();
                 break;
-            case "echo":
+            case Constants.ECHO:
                 StringBuilder sb = new StringBuilder();
                 for (int i = 1; i < line.length; i++)
                     sb.append(line[i]).append(" ");
@@ -85,11 +85,11 @@ public class Driver {
                 sb.setLength(sb.length() -1);
                 output = sb.toString();
                 break;
-            case "cd":
+            case Constants.CD:
                 assertEQ(2, line.length, "Expected: cd <directoryName>");
                 processCD(line[1]);
                 break;
-            case "pwd":
+            case Constants.PWD:
                 GDirectory temp = currDir;
                 StringBuilder presentWorkingDirectory = new StringBuilder();
                 do {
@@ -100,7 +100,7 @@ public class Driver {
 
                 output = presentWorkingDirectory.toString();
                 break;
-            case "write":
+            case Constants.WRITE:
                 if (currDir.containsDirectory(line[1]))
                     throw new Exception(line[1] + " is actually a directory");
                 if (!currDir.containsFile(line[1]))
@@ -112,7 +112,7 @@ public class Driver {
 
                 ((GFile) currDir.get(line[1])).append(content.toString());
                 break;
-            case "cat":
+            case Constants.CAT:
                 assertEQ(2, line.length, "Expected: cat <fileName");
                 if (currDir.containsDirectory(line[1]))
                     throw new Exception(line[1] + " is actually a directory");
@@ -143,6 +143,7 @@ public class Driver {
         manPages.put(Constants.CD, Constants.CD_DESC);
         manPages.put(Constants.PWD, Constants.PWD_DESC);
         manPages.put(Constants.WRITE, Constants.WRITE_DESC);
+        manPages.put(Constants.CAT, Constants.CAT_DESC);
         manPages.put(Constants.QUIT, Constants.QUIT_DESC);
     }
 

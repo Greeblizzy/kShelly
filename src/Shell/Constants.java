@@ -19,6 +19,7 @@ public class Constants {
     public static final String CD = "cd";
     public static final String PWD = "pwd";
     public static final String WRITE = "write";
+    public static final String CAT = "cat";
     public static final String QUIT = "quit";
 
     // command descriptions
@@ -33,5 +34,6 @@ public class Constants {
     public static final String CD_DESC = "changes directory to given folder";
     public static final String PWD_DESC = "prints present working directory";
     public static final String WRITE_DESC = "writes <content> to <fileName>";
+    public static final String CAT_DESC = "Prints content in <fileName>";
     public static final String QUIT_DESC = "logout";
 }
