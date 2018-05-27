@@ -1,10 +1,13 @@
 import Shell.Constants;
+import Shell.Exception.UnexpectedDirectoryException;
 import Shell.FileType;
 import Shell.GDirectory;
 import Shell.GFile;
 
 import javax.naming.CompositeName;
+import java.nio.file.FileSystemException;
 import java.nio.file.InvalidPathException;
+import java.nio.file.NoSuchFileException;
 import java.util.*;
 import java.util.concurrent.ConcurrentSkipListMap;
 
@@ -16,65 +19,62 @@ public class Driver {
 
     public static void main(String[] args) {
         setUpManual();
-        Scanner sc = new Scanner(System.in);    // Intellij does auto imports
+        Scanner sc = new Scanner(System.in);
         currDir = root = new GDirectory("/", null);
 
         System.out.println(Constants.welcomeText);
-        // Process incoming user commands
         while (!quit) {
             System.out.print("\n>");
-            // reads input line, stores the split array on space in line
-            try {
+            try {       // reads input line, stores the split array on space in line
                 String[] line = sc.nextLine().split(" ");
-                String ouput = runCommand(line);
-                System.out.println(ouput);
+                String output = runCommand(line);
+                System.out.println(output);
             } catch (Exception e) {
                 System.out.println(e.getMessage());
             }
         }
     }
 
-    private static String runCommand(String... line) throws Exception { //what does ... mean? String[] Is there a difference? yes
-        // can pass in an array as runCommand("1", "2", "3") oh ok got it; also forces it to be the last param in a mthod
+    private static String runCommand(String... line) throws Exception {
+        // String... = an array as runCommand("1", "2", "3") - forces it to be the last param in a method
         String output = "";
 
-        // considers the first word -> lower case for switch
         switch (line[0].toLowerCase()) {
-            case Constants.MAN:     // line = ["manPages", "<content>"]      process it
+            case Constants.MAN:         // line = ["manPages", "<content>"]
                 assertEQ(2, line.length, "Expected: man <command>");
                 output = manPages.getOrDefault(line[1], "Invalid Command");
                 break;
-            case Constants.TOUCH:       // line = ["touch", "<fileName>"]      process it
+            case Constants.TOUCH:       // line = ["touch", "<fileName>"]
                 assertEQ(2, line.length, "Expected: touch <fileName>");
-                if (currDir.contains(line[1]))
-                    throw new Exception("Naming Conflict");
+                if (currDir.containsDirectory(line[1]))
+                    throw new UnexpectedDirectoryException("Naming Conflict");
 
                 // TODO: support file extensions
                 GFile gFile = new GFile(line[1], FileType.TXT);
                 currDir.add(gFile);
                 break;
-            case Constants.RM:      // line = ["rm", "<fileName>"]      process it
+            case Constants.RM:          // line = ["rm", "<fileName>"]
                 assertEQ(2, line.length, "Expected: rm <fileName>");
-                if (!currDir.containsFile(line[1]))
-                    throw new Exception("File Not Found");
+                assertIsFile(line[1]);
 
                 currDir.remove(line[1]);
                 break;
-            case Constants.MKDIR:
+            case Constants.MKDIR:       // line = ["mkdir", "<directoryName>"]
                 assertEQ(2, line.length, "Expected: mkdir <directoryName>");
                 if (currDir.contains(line[1]))
-                    throw new Exception(Constants.missingFileDir);
+                    throw new UnexpectedDirectoryException(Constants.missingFileDir);
 
                 currDir.add(new GDirectory(line[1], currDir));
                 break;
             case Constants.RMDIR:
                 assertEQ(2, line.length, "Expected: rmdir <directoryName>");
                 if (!currDir.containsDirectory(line[1]) || !((GDirectory) currDir.get(line[1])).isEmpty())
-                    throw new Exception("Directory not found");
+                    throw new UnexpectedDirectoryException("Directory not found");
 
                 currDir.remove(line[1]);
                 break;
-            case Constants.LS: case Constants.LL:   // skip ll for now
+            case Constants.LL:   // skip ll for now
+            case Constants.LS:
                 output = currDir.toString();
                 break;
             case Constants.ECHO:
@@ -101,10 +101,7 @@ public class Driver {
                 output = presentWorkingDirectory.toString();
                 break;
             case Constants.WRITE:
-                if (currDir.containsDirectory(line[1]))
-                    throw new Exception(line[1] + " is actually a directory");
-                if (!currDir.containsFile(line[1]))
-                    throw new Exception("File doesn't exist");
+                assertIsFile(line[1]);
 
                 StringBuilder content = new StringBuilder();
                 for (int wordIndex = 2; wordIndex < line.length; wordIndex++)
@@ -114,23 +111,19 @@ public class Driver {
                 break;
             case Constants.CAT:
                 assertEQ(2, line.length, "Expected: cat <fileName");
-                if (currDir.containsDirectory(line[1]))
-                    throw new Exception(line[1] + " is actually a directory");
-                if (!currDir.containsFile(line[1]))
-                    throw new Exception("File doesn't exist");
+                assertIsFile(line[1]);
 
                 output = ((GFile) currDir.get(line[1])).getContent();
                 break;
-            case "quit":
+            case Constants.QUIT:
                 quit = true;
                 break;
             default:
-                output = "Unrecognized Command";
+                throw new IllegalArgumentException("No such command");
         }
         return output;
     }
 
-    // all these strings need to move over to Constants
     private static void setUpManual() {
         manPages.put(Constants.MAN, Constants.MAN_DESC);
         manPages.put(Constants.TOUCH, Constants.TOUCH_DESC);
@@ -147,24 +140,26 @@ public class Driver {
         manPages.put(Constants.QUIT, Constants.QUIT_DESC);
     }
 
-    private static void assertEQ(int expected, int actual, String errorMsg) throws Exception{
+    private static void assertEQ(int expected, int actual, String errorMsg) throws IllegalArgumentException {
         if (expected != actual)
-            throw new Exception(errorMsg);
+            throw new IllegalArgumentException(errorMsg);
     }
 
-    private static void assertBase(boolean exists, String path, boolean isFile, String errorMsg) throws Exception {
-        if (exists != (isFile ? currDir.containsFile(path) : currDir.containsDirectory(path))) //I lost you here
-            throw new Exception(errorMsg);
+    private static void assertIsFile(String path) throws FileSystemException {
+        if (currDir.containsDirectory(path))
+            throw new UnexpectedDirectoryException(path + " is actually a directory");
+        if (!currDir.containsFile(path))
+            throw new NoSuchFileException(path + " doesn't exist");
     }
 
     private static void processCD(String path) throws InvalidPathException {
         switch (path) {
-            case ("/"):
+            case "/":
                 currDir = root;
                 break;
             case ".":   // empty
                 break;
-            case (".."):
+            case "..":
                 currDir = currDir.getParent();
                 break;
             default:

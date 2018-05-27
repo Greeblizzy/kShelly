@@ -31,4 +31,12 @@ public class GFile extends Base {
         return String.format("GFile(%s)", getName());
     }
     //%s puts in the corresponding arg (getName()) into that position
+
+    public String read() {
+        return type.read(content);
+    }
+
+//    public void write(String newContent) {
+//        content = type.write(content);
+//    }
 }

@@ -53,3 +53,5 @@ What I'm working on:
 5-27-2018
 - Made the strings in the switch statements contain constants
 - Will start to work on part 2 tomorrow
+- made a dedicated Exception for error messages in Driver.java
+- refactored the functions in Driver.java
