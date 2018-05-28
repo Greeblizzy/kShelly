@@ -55,3 +55,9 @@ What I'm working on:
 - Will start to work on part 2 tomorrow
 - made a dedicated Exception for error messages in Driver.java
 - refactored the functions in Driver.java
+
+5-28-2018
+- Worked on sh <script.sh>
+What's next?
+- Will finish up sh <script.sh>
+- Work on mv <origin> <destination>

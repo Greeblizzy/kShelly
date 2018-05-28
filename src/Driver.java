@@ -5,6 +5,7 @@ import Shell.GDirectory;
 import Shell.GFile;
 
 import javax.naming.CompositeName;
+import java.io.*;
 import java.nio.file.FileSystemException;
 import java.nio.file.InvalidPathException;
 import java.nio.file.NoSuchFileException;
@@ -21,6 +22,25 @@ public class Driver {
         setUpManual();
         Scanner sc = new Scanner(System.in);
         currDir = root = new GDirectory("/", null);
+
+        // read and run scripts
+        try {
+            for (String fileName : args) {
+                String sCurrentLine;
+                BufferedReader br = new BufferedReader(new FileReader(fileName));
+                while ((sCurrentLine = br.readLine()) != null) {
+                    try {
+                        runCommand(sCurrentLine);
+                    } catch (Exception e) {
+                        System.out.println(e.getMessage());
+                    }
+                }
+            }
+        } catch (FileNotFoundException fe) {
+            System.out.println("Invalid File");
+        } catch (IOException io) {
+            System.out.println("Invalid Operation");
+        }
 
         System.out.println(Constants.welcomeText);
         while (!quit) {
@@ -117,6 +137,19 @@ public class Driver {
                 break;
             case Constants.QUIT:
                 quit = true;
+                break;
+            case Constants.SH:
+                assertEQ(2, line.length, "Expected: sh <script.sh>");
+                assertIsFile(line[1]);
+
+                // read the gfile
+                String[] commandLines = ((GFile)currDir.get(line[1])).read().split("\n");
+                try {
+                    for (String commandLine : commandLines)
+                        System.out.println(runCommand(commandLine.split(" ")));
+                } catch (Exception e) {
+                    System.out.println(e.getMessage());
+                }
                 break;
             default:
                 throw new IllegalArgumentException("No such command");

@@ -21,6 +21,7 @@ public class Constants {
     public static final String WRITE = "write";
     public static final String CAT = "cat";
     public static final String QUIT = "quit";
+    public static final String SH = "sh";
 
     // command descriptions
     public static final String MAN_DESC = "prints out a help menu for a given command";
@@ -36,4 +37,5 @@ public class Constants {
     public static final String WRITE_DESC = "writes <content> to <fileName>";
     public static final String CAT_DESC = "Prints content in <fileName>";
     public static final String QUIT_DESC = "logout";
+    public static final String SH_DESC = "Executes all command in a file as if you had typed them out";
 }
