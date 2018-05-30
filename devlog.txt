@@ -61,3 +61,8 @@ What I'm working on:
 What's next?
 - Will finish up sh <script.sh>
 - Work on mv <origin> <destination>
+
+5-30-2018
+- Added ASCII_Letters to Constants
+- Added a HashMap mapping String to ASCII_Letters in FileType
+- Working on reading in PNG extension files

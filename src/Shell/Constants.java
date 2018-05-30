@@ -1,5 +1,7 @@
 package Shell;
 
+import java.util.List;
+
 public class Constants {
     // startup
     public static final String welcomeText = "Welcome to kShelly!";
@@ -38,4 +40,189 @@ public class Constants {
     public static final String CAT_DESC = "Prints content in <fileName>";
     public static final String QUIT_DESC = "logout";
     public static final String SH_DESC = "Executes all command in a file as if you had typed them out";
+
+    //ASCII letters
+    public static final String[] ASCII_A = new String[] {
+            "  _|_| ",
+            "_|    _|",
+            "_|_|_|_|",
+            "_|    _|",
+            "_|    _|"
+    };
+    public static final String[] ASCII_B = new String[] {
+            "_|_|_| ",
+            "_|    _|",
+            "_|_|_|  ",
+            "_|    _|",
+            "_|_|_|"
+    };
+    public static final String[] ASCII_C = new String[] {
+            "  _|_|_|",
+            "_|     ",
+            "_|     ",
+            "_|     ",
+            "  _|_|_|"
+    };
+    public static final String[] ASCII_D = new String[] {
+            "_|_|_|",
+            "_|    _|",
+            "_|    _|",
+            "_|    _|",
+            "_|_|_|"
+    };
+    public static final String[] ASCII_E = new String[] {
+            "_|_|_|_|",
+            "_|  ",
+            "_|_|_|",
+            "_|    ",
+            "_|_|_|_|"
+    };
+    public static final String[] ASCII_F = new String[] {
+            "_|_|_|_|",
+            "_|    ",
+            "_|_|_|",
+            "_|  ",
+            "_|  "
+    };
+    public static final String[] ASCII_G = new String[] {
+            "  _|_|_|",
+            "_|      ",
+            "_|  _|_|",
+            "_|    _|",
+            "  _|_|_|"
+    };
+    public static final String[] ASCII_H = new String[] {
+            "_|    _|",
+            "_|    _|",
+            "_|_|_|_|",
+            "_|    _|",
+            "_|    _|"
+    };
+    public static final String[] ASCII_I = new String[] {
+            "_|_|_|",
+            "  _|  ",
+            "  _|  ",
+            "  _|  ",
+            "_|_|_|"
+    };
+    public static final String[] ASCII_J = new String[] {
+            "      _|",
+            "      _|",
+            "      _|",
+            "_|    _|",
+            "  _|_|"
+    };
+    public static final String[] ASCII_K = new String[] {
+            "_|    _|",
+            "_|  _|  ",
+            "_|_|    ",
+            "_|  _|  ",
+            "_|    _|"
+    };
+    public static final String[] ASCII_L = new String[] {
+            "_|      ",
+            "_|      ",
+            "_|      ",
+            "_|      ",
+            "_|_|_|_|"
+    };
+    public static final String[] ASCII_M = new String[] {
+            "_|      _|",
+            "_|_|  _|_|",
+            "_|  _|  _|",
+            "_|      _|",
+            "_|      _|"
+    };
+    public static final String[] ASCII_N = new String[] {
+            "_|      _|",
+            "_|_|    _|",
+            "_|  _|  _|",
+            "_|    _|_|",
+            "_|      _|"
+    };
+    public static final String[] ASCII_O = new String[] {
+            "  _|_|  ",
+            "_|    _|",
+            "_|    _|",
+            "_|    _|",
+            "  _|_|  "
+    };
+    public static final String[] ASCII_P = new String[] {
+            "_|_|_|  ",
+            "_|    _|",
+            "_|_|_|  ",
+            "_|      ",
+            "_|      "
+    };
+    public static final String[] ASCII_Q = new String[] {
+            "  _|_|",
+            "_|    _|",
+            "_|  _|_|",
+            "_|    _|",
+            "  _|_|  _|"
+    };
+    public static final String[] ASCII_R = new String[] {
+            "_|_|_|  ",
+            "_|    _|",
+            "_|_|_|  ",
+            "_|    _|",
+            "_|    _|"
+    };
+    public static final String[] ASCII_S = new String[] {
+            "  _|_|_|",
+            "_|      ",
+            "  _|_|  ",
+            "      _|",
+            "_|_|_|"
+    };
+    public static final String[] ASCII_T = new String[] {
+            "_|_|_|_|_|",
+            "    _|    ",
+            "    _|    ",
+            "    _|    ",
+            "    _|    "
+    };
+    public static final String[] ASCII_U = new String[] {
+            "_|    _|  ",
+            "_|    _|",
+            "_|    _|  ",
+            "_|    _|",
+            "  _|_|"
+    };
+    public static final String[] ASCII_V = new String[] {
+            "_|      _|",
+            "_|      _|",
+            "_|      _|",
+            "  _|  _|  ",
+            "    _|    "
+    };
+    public static final String[] ASCII_W = new String[] {
+            "_|          _|",
+            "_|          _|",
+            "_|    _|    _|",
+            "  _|  _|  _|  ",
+            "    _|  _|    "
+    };
+    public static final String[] ASCII_X = new String[] {
+            "_|      _|",
+            "  _|  _|  ",
+            "    _|    ",
+            "  _|  _|  ",
+            "_|      _|"
+    };
+    public static final String[] ASCII_Y = new String[] {
+            "_|      _|",
+            "  _|  _|  ",
+            "    _|    ",
+            "    _|    ",
+            "    _|    "
+    };
+    public static final String[] ASCII_Z = new String[] {
+            "_|_|_|_|_|",
+            "      _|  ",
+            "    _|    ",
+            "  _|      ",
+            "_|_|_|_|_|"
+    };
+
 }

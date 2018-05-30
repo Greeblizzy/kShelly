@@ -10,15 +10,13 @@ public class GFile extends Base {
        this.type = type;
     }
 
-    public String getContent() {
-        return content;
-    }
-    public void setContent(String content) {
-        this.content = content;
-    }
     public void append(String content)
     {
         this.content += content;
+    }
+
+    public String read() {
+        return type.read(content);
     }
 
     @Override
@@ -28,15 +26,7 @@ public class GFile extends Base {
 
     @Override
     public String toString() {
-        return String.format("GFile(%s)", getName());
+        return String.format("GFile(%s - %s)", getName(), type);
     }
     //%s puts in the corresponding arg (getName()) into that position
-
-    public String read() {
-        return type.read(content);
-    }
-
-//    public void write(String newContent) {
-//        content = type.write(content);
-//    }
 }

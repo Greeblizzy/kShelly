@@ -24,14 +24,17 @@ public class Driver {
         currDir = root = new GDirectory("/", null);
 
         // read and run scripts
-        try {
+        try {       // external script - reads an actual file
             for (String fileName : args) {
                 String sCurrentLine;
+                // opens a file to read based on args
                 BufferedReader br = new BufferedReader(new FileReader(fileName));
                 while ((sCurrentLine = br.readLine()) != null) {
                     try {
+                        // for every line in the file, execute it
                         runCommand(sCurrentLine);
                     } catch (Exception e) {
+                        // if an error occurred, print it
                         System.out.println(e.getMessage());
                     }
                 }
@@ -44,11 +47,12 @@ public class Driver {
 
         System.out.println(Constants.welcomeText);
         while (!quit) {
-            System.out.print("\n>");
+            System.out.print(">");
             try {       // reads input line, stores the split array on space in line
                 String[] line = sc.nextLine().split(" ");
                 String output = runCommand(line);
-                System.out.println(output);
+                if (!output.equals(""))
+                    System.out.println(output);
             } catch (Exception e) {
                 System.out.println(e.getMessage());
             }
@@ -69,9 +73,8 @@ public class Driver {
                 if (currDir.containsDirectory(line[1]))
                     throw new UnexpectedDirectoryException("Naming Conflict");
 
-                // TODO: support file extensions
-                GFile gFile = new GFile(line[1], FileType.TXT);
-                currDir.add(gFile);
+                String[] fileName = line[1].split("\\.");
+                currDir.add(new GFile(line[1], fileName.length == 2 ? FileType.get(fileName[1]) : FileType.TXT));
                 break;
             case Constants.RM:          // line = ["rm", "<fileName>"]
                 assertEQ(2, line.length, "Expected: rm <fileName>");
@@ -133,12 +136,12 @@ public class Driver {
                 assertEQ(2, line.length, "Expected: cat <fileName");
                 assertIsFile(line[1]);
 
-                output = ((GFile) currDir.get(line[1])).getContent();
+                output = ((GFile) currDir.get(line[1])).read();
                 break;
             case Constants.QUIT:
                 quit = true;
                 break;
-            case Constants.SH:
+            case Constants.SH:      // internal script
                 assertEQ(2, line.length, "Expected: sh <script.sh>");
                 assertIsFile(line[1]);
 
@@ -170,6 +173,7 @@ public class Driver {
         manPages.put(Constants.PWD, Constants.PWD_DESC);
         manPages.put(Constants.WRITE, Constants.WRITE_DESC);
         manPages.put(Constants.CAT, Constants.CAT_DESC);
+        manPages.put(Constants.SH, Constants.SH_DESC);
         manPages.put(Constants.QUIT, Constants.QUIT_DESC);
     }
 
