@@ -66,3 +66,9 @@ What's next?
 - Added ASCII_Letters to Constants
 - Added a HashMap mapping String to ASCII_Letters in FileType
 - Working on reading in PNG extension files
+
+5-31-2018
+- Finished reading PNG extension
+- Working on mv next
+- supports external .sh files
+-

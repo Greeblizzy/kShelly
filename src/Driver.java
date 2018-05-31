@@ -24,35 +24,32 @@ public class Driver {
         currDir = root = new GDirectory("/", null);
 
         // read and run scripts
-        try {       // external script - reads an actual file
-            for (String fileName : args) {
+        for (String fileName : args) {
+            try {       // external script - reads an actual file
                 String sCurrentLine;
                 // opens a file to read based on args
                 BufferedReader br = new BufferedReader(new FileReader(fileName));
                 while ((sCurrentLine = br.readLine()) != null) {
                     try {
                         // for every line in the file, execute it
-                        runCommand(sCurrentLine);
+                        printNonEmpty(runCommand(sCurrentLine.split(" ")));
                     } catch (Exception e) {
                         // if an error occurred, print it
                         System.out.println(e.getMessage());
                     }
                 }
+            } catch (FileNotFoundException fe) {
+                System.out.println("Invalid File");
+            } catch (IOException io) {
+                System.out.println("Invalid Operation");
             }
-        } catch (FileNotFoundException fe) {
-            System.out.println("Invalid File");
-        } catch (IOException io) {
-            System.out.println("Invalid Operation");
         }
 
-        System.out.println(Constants.welcomeText);
+//        System.out.println(Constants.welcomeText);
         while (!quit) {
             System.out.print(">");
             try {       // reads input line, stores the split array on space in line
-                String[] line = sc.nextLine().split(" ");
-                String output = runCommand(line);
-                if (!output.equals(""))
-                    System.out.println(output);
+                printNonEmpty(runCommand(sc.nextLine().split(" ")));
             } catch (Exception e) {
                 System.out.println(e.getMessage());
             }
@@ -154,6 +151,9 @@ public class Driver {
                     System.out.println(e.getMessage());
                 }
                 break;
+            case "#":
+            case "":
+                break;
             default:
                 throw new IllegalArgumentException("No such command");
         }
@@ -200,7 +200,14 @@ public class Driver {
                 currDir = currDir.getParent();
                 break;
             default:
-                throw new InvalidPathException(path, "Directory Not Found");
+                if (!currDir.containsDirectory(path))
+                    throw new InvalidPathException(path, "Directory Not Found");
+                currDir = (GDirectory) currDir.get(path);
         }
+    }
+
+    private static void printNonEmpty(String str) {
+        if (!str.equals(""))
+            System.out.println(str);
     }
 }
