@@ -161,17 +161,32 @@ public class FileSystem {
             return;
         }
 
+        currDir = path.contains("/") && !path.equals("/") ? multiDirectory(path) : symbolicLink(path, currDir);
+    }
+
+    private GDirectory symbolicLink(String path, GDirectory curr) {
         switch (path) {
             case "/":
-                currDir = root;
-                break;
+                return root;
             case ".":   // empty
-                break;
+                return curr;
             case "..":
-                currDir = currDir.getParent();
-                break;
+                return curr.getParent();
             default:
                 throw new InvalidPathException(path, "Directory Not Found");
         }
+    }
+
+    private GDirectory multiDirectory(String path) {
+        GDirectory curr = currDir;
+        if (path.charAt(0) == '/') {
+            curr = root;
+            path = path.substring(1);
+        }
+
+        for (String dir : path.split("/"))
+            curr = curr.containsDirectory(dir) ? (GDirectory) curr.get(dir) : symbolicLink(dir, curr);
+
+        return curr;
     }
 }

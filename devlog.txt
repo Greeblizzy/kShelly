@@ -71,4 +71,8 @@ What's next?
 - Finished reading PNG extension
 - Working on mv next
 - supports external .sh files
+
+6-2-2018
+- refactored FileSystem
+- updated cd to change multi-directories
 -

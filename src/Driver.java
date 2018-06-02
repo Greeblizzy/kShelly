@@ -18,7 +18,6 @@ public class Driver {
                         // for every line in the file, execute it
                         printNonEmpty(fs.runCommand(sCurrentLine.split(" ")));
                     } catch (Exception e) {
-                        // if an error occurred, print it
                         System.out.println(e.getMessage());
                     }
                 }
@@ -29,9 +28,8 @@ public class Driver {
             }
         }
 
-//        System.out.println(Constants.welcomeText);
         while (fs.isRunning()) {
-            System.out.print(">");
+            System.out.print("> ");
             try {       // reads input line, stores the split array on space in line
                 printNonEmpty(fs.runCommand(sc.nextLine().split(" ")));
             } catch (Exception e) {

@@ -30,6 +30,7 @@ public enum FileType implements FileOp {
             return Arrays.stream(asciiContent).map(StringBuilder::toString).collect(Collectors.joining("\n"));
         }
     };
+
     private static final Map<Character, String[]> ASCII_mapping = new HashMap<>();
 
     private static final Map<String, FileType> mapping = new HashMap<>();
