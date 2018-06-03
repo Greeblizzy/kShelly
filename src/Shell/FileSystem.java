@@ -1,6 +1,9 @@
 package Shell;
 
 import Shell.Exception.UnexpectedDirectoryException;
+
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.nio.file.FileSystemException;
 import java.nio.file.InvalidPathException;
 import java.nio.file.NoSuchFileException;
@@ -28,6 +31,7 @@ public class FileSystem {
         manPages.put(Constants.CAT, Constants.CAT_DESC);
         manPages.put(Constants.SH, Constants.SH_DESC);
         manPages.put(Constants.QUIT, Constants.QUIT_DESC);
+        manPages.put(Constants.MV, Constants.MV_DESC);
     }
 
     public FileSystem() {
@@ -134,6 +138,11 @@ public class FileSystem {
                     System.out.println(e.getMessage());
                 }
                 break;
+            case Constants.MV:
+                assertIsFile(line[1]);
+                assertEQ(3, line.length, "Expected: mv <origin> <destination>");
+                move(line[1], line[2]);
+                break;
             case "#":
             case "":
                 break;
@@ -177,16 +186,38 @@ public class FileSystem {
         }
     }
 
-    private GDirectory multiDirectory(String path) {
+    private GDirectory multiDirectory(String path) throws InvalidPathException {
         GDirectory curr = currDir;
         if (path.charAt(0) == '/') {
             curr = root;
             path = path.substring(1);
         }
 
+        if (!path.contains("/"))
+            if (currDir.containsDirectory(path))
+                return (GDirectory) currDir.get(path);
+            else
+                throw new InvalidPathException(path, " not found");
+
         for (String dir : path.split("/"))
             curr = curr.containsDirectory(dir) ? (GDirectory) curr.get(dir) : symbolicLink(dir, curr);
 
         return curr;
+    }
+
+    private void move (String src, String dest) throws FileSystemException {
+        // checking if src is real
+        GDirectory srcDir = multiDirectory(src.substring(0, src.lastIndexOf("/")));
+        String srcFileName = src.substring(src.lastIndexOf("/") + 1);
+        if (!srcDir.containsFile(srcFileName))
+            throw new NoSuchFileException(srcFileName + " doesn't exist");
+
+        // checking if dest is valid
+        GDirectory destDir = multiDirectory(dest.substring(0, dest.lastIndexOf("/")));
+
+        // now actually do the move
+        // you now have 2 directories, move the desired file from one to the other
+        // remove from src, add to dest
+        destDir.add(srcDir.remove(srcFileName));
     }
 }

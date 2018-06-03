@@ -75,4 +75,8 @@ What's next?
 6-2-2018
 - refactored FileSystem
 - updated cd to change multi-directories
--
+
+6-3-2018
+- Worked on mv command
+- Still need to fix the bugs -> Support multi-directory for files/directories
+- TODO: fix the format of ls

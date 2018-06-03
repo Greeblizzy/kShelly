@@ -26,8 +26,8 @@ public class GDirectory extends Base {
         files.put(b.getName(), b);
     }
 
-    public void remove(String name) {
-        files.remove(name);
+    public Base remove(String name) {
+        return files.remove(name);
     }
 
     public boolean contains(String name) {

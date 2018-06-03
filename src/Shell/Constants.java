@@ -2,39 +2,41 @@ package Shell;
 
 class Constants {
     // missing info
-    public static final String missingFileDir = "File/Directory with such name exists";
+    static final String missingFileDir = "File/Directory with such name exists";
 
     // commands
-    public static final String MAN = "man";
-    public static final String TOUCH = "touch";
-    public static final String RM = "rm";
-    public static final String MKDIR = "mkdir";
-    public static final String RMDIR = "rmdir";
-    public static final String LS = "ls";
-    public static final String LL = "ll";
-    public static final String ECHO = "echo";
-    public static final String CD = "cd";
-    public static final String PWD = "pwd";
-    public static final String WRITE = "write";
-    public static final String CAT = "cat";
-    public static final String QUIT = "quit";
-    public static final String SH = "sh";
+    static final String MAN = "man";
+    static final String TOUCH = "touch";
+    static final String RM = "rm";
+    static final String MKDIR = "mkdir";
+    static final String RMDIR = "rmdir";
+    static final String LS = "ls";
+    static final String LL = "ll";
+    static final String ECHO = "echo";
+    static final String CD = "cd";
+    static final String PWD = "pwd";
+    static final String WRITE = "write";
+    static final String CAT = "cat";
+    static final String QUIT = "quit";
+    static final String SH = "sh";
+    static final String MV = "mv";
 
     // command descriptions
-    public static final String MAN_DESC = "prints out a help menu for a given command";
-    public static final String TOUCH_DESC = "creates a file named <fileName>";
-    public static final String RM_DESC = "removes the file named <fileName>";
-    public static final String MKDIR_DESC = "creates a folder named <directoryName>";
-    public static final String RMDIR_DESC = "removes the folder named <directoryName>";
-    public static final String LS_DESC = "lists all files and directories in current folder";
-    public static final String LL_DESC = "lists all files and directories in greater detail";
-    public static final String ECHO_DESC = "outputs content to terminal output";
-    public static final String CD_DESC = "changes directory to given folder";
-    public static final String PWD_DESC = "prints present working directory";
-    public static final String WRITE_DESC = "writes <content> to <fileName>";
-    public static final String CAT_DESC = "Prints content in <fileName>";
-    public static final String QUIT_DESC = "logout";
-    public static final String SH_DESC = "Executes all command in a file as if you had typed them out";
+    static final String MAN_DESC = "prints out a help menu for a given command";
+    static final String TOUCH_DESC = "creates a file named <fileName>";
+    static final String RM_DESC = "removes the file named <fileName>";
+    static final String MKDIR_DESC = "creates a folder named <directoryName>";
+    static final String RMDIR_DESC = "removes the folder named <directoryName>";
+    static final String LS_DESC = "lists all files and directories in current folder";
+    static final String LL_DESC = "lists all files and directories in greater detail";
+    static final String ECHO_DESC = "outputs content to terminal output";
+    static final String CD_DESC = "changes directory to given folder";
+    static final String PWD_DESC = "prints present working directory";
+    static final String WRITE_DESC = "writes <content> to <fileName>";
+    static final String CAT_DESC = "Prints content in <fileName>";
+    static final String QUIT_DESC = "logout";
+    static final String SH_DESC = "Executes all command in a file as if you had typed them out";
+    static final String MV_DESC = "moves <origin> to <destination>";
 
     //ASCII letters
     static final int ASCII_SIZE = 5;
