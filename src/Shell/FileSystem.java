@@ -158,6 +158,9 @@ public class FileSystem {
     }
 
     private void assertIsFile(String path) throws FileSystemException {
+//        var dir = multiDirectory(path);
+
+
         if (currDir.containsDirectory(path))
             throw new UnexpectedDirectoryException(path + " is actually a directory");
         if (!currDir.containsFile(path))
@@ -165,12 +168,7 @@ public class FileSystem {
     }
 
     private void processCD(String path) throws InvalidPathException {
-        if (currDir.containsDirectory(path)) {
-            currDir = (GDirectory) currDir.get(path);
-            return;
-        }
-
-        currDir = path.contains("/") && !path.equals("/") ? multiDirectory(path) : symbolicLink(path, currDir);
+        currDir = multiDirectory(path);
     }
 
     private GDirectory symbolicLink(String path, GDirectory curr) {
@@ -186,19 +184,28 @@ public class FileSystem {
         }
     }
 
+    // TODO: change GDirectory -> Base .. refactor everything and make sure it is consistent - Lisa
     private GDirectory multiDirectory(String path) throws InvalidPathException {
+        // Consider same directory first
         GDirectory curr = currDir;
-        if (path.charAt(0) == '/') {
-            curr = root;
-            path = path.substring(1);
-        }
+
+        try {   // test if symbolic link
+            return symbolicLink(path, currDir);
+        } catch (InvalidPathException ignored) {}
 
         if (!path.contains("/"))
             if (currDir.containsDirectory(path))
                 return (GDirectory) currDir.get(path);
             else
-                throw new InvalidPathException(path, " not found");
+                throw new InvalidPathException(path, "Not found");
 
+        // does it start at root
+        if (path.charAt(0) == '/') {
+            curr = root;
+            path = path.substring(1);
+        }
+
+        // multi directory support
         for (String dir : path.split("/"))
             curr = curr.containsDirectory(dir) ? (GDirectory) curr.get(dir) : symbolicLink(dir, curr);
 

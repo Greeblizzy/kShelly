@@ -16,6 +16,7 @@ public class Driver {
                 while ((sCurrentLine = br.readLine()) != null) {
                     try {
                         // for every line in the file, execute it
+//                        System.out.println(sCurrentLine);
                         printNonEmpty(fs.runCommand(sCurrentLine.split(" ")));
                     } catch (Exception e) {
                         System.out.println(e.getMessage());
