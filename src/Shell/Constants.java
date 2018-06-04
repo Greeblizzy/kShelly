@@ -1,6 +1,8 @@
 package Shell;
 
 class Constants {
+    private Constants() {}
+
     // missing info
     static final String missingFileDir = "File/Directory with such name exists";
 

@@ -34,7 +34,7 @@ public class Driver {
             try {       // reads input line, stores the split array on space in line
                 printNonEmpty(fs.runCommand(sc.nextLine().split(" ")));
             } catch (Exception e) {
-                System.out.println(e.getMessage());
+                e.printStackTrace();
             }
         }
     }

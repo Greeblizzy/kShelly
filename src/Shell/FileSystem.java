@@ -1,9 +1,6 @@
 package Shell;
 
 import Shell.Exception.UnexpectedDirectoryException;
-
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.nio.file.FileSystemException;
 import java.nio.file.InvalidPathException;
 import java.nio.file.NoSuchFileException;
@@ -167,8 +164,15 @@ public class FileSystem {
             throw new NoSuchFileException(path + " doesn't exist");
     }
 
+    // why give me code you didnt test what do you mean i couldnt test it, fix it trying
     private void processCD(String path) throws InvalidPathException {
-        currDir = multiDirectory(path);
+        Base location = multiDirectory(path);
+        // is this a file?
+        if (!location.isFile()) {
+            currDir = (GDirectory) location;
+        } else {
+            throw new InvalidPathException(path, "Can't cd into a file");
+        }
     }
 
     private GDirectory symbolicLink(String path, GDirectory curr) {
@@ -184,18 +188,18 @@ public class FileSystem {
         }
     }
 
-    // TODO: change GDirectory -> Base .. refactor everything and make sure it is consistent - Lisa
-    private GDirectory multiDirectory(String path) throws InvalidPathException {
+    // TODO: refactor everything and make sure it is consistent - Lisa
+    private Base multiDirectory(String path) throws InvalidPathException {
         // Consider same directory first
-        GDirectory curr = currDir;
+        Base curr = currDir;
 
         try {   // test if symbolic link
             return symbolicLink(path, currDir);
         } catch (InvalidPathException ignored) {}
 
         if (!path.contains("/"))
-            if (currDir.containsDirectory(path))
-                return (GDirectory) currDir.get(path);
+            if (currDir.contains(path))
+                return currDir.get(path);
             else
                 throw new InvalidPathException(path, "Not found");
 
@@ -207,24 +211,24 @@ public class FileSystem {
 
         // multi directory support
         for (String dir : path.split("/"))
-            curr = curr.containsDirectory(dir) ? (GDirectory) curr.get(dir) : symbolicLink(dir, curr);
+            curr = ((GDirectory) curr).contains(dir) ? ((GDirectory) curr).get(dir) : symbolicLink(dir, (GDirectory) curr);
 
-        return curr;
+        return curr.isFile() ? (GFile) curr : (GDirectory) curr;
     }
 
     private void move (String src, String dest) throws FileSystemException {
-        // checking if src is real
-        GDirectory srcDir = multiDirectory(src.substring(0, src.lastIndexOf("/")));
-        String srcFileName = src.substring(src.lastIndexOf("/") + 1);
-        if (!srcDir.containsFile(srcFileName))
-            throw new NoSuchFileException(srcFileName + " doesn't exist");
+        Base srcLoc = multiDirectory(src);
+        Base destDir = dest.contains("/") ? multiDirectory(dest.substring(0, dest.lastIndexOf("/"))) : currDir;
+        if (destDir.isFile())
+            throw new UnexpectedDirectoryException(dest + " is not a directory");
 
-        // checking if dest is valid
-        GDirectory destDir = multiDirectory(dest.substring(0, dest.lastIndexOf("/")));
+        String destFileName = dest.contains("/") ? dest.substring(src.lastIndexOf("/") + 1) : dest;
+        srcLoc.setName(destFileName);
 
+        GDirectory srcDir = dest.contains("/") ? (GDirectory) multiDirectory(src.substring(0, src.lastIndexOf("/"))) : currDir;
         // now actually do the move
         // you now have 2 directories, move the desired file from one to the other
         // remove from src, add to dest
-        destDir.add(srcDir.remove(srcFileName));
+        ((GDirectory)destDir).add(srcDir.remove(srcLoc.getName()));
     }
 }
