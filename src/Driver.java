@@ -9,17 +9,18 @@ public class Driver {
 
         // read and run scripts
         for (String fileName : args) {
-            try {       // external script - reads an actual file
+            try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {  // reads an actual external script
                 String sCurrentLine;
                 // opens a file to read based on args
-                BufferedReader br = new BufferedReader(new FileReader(fileName));
                 while ((sCurrentLine = br.readLine()) != null) {
                     try {
                         // for every line in the file, execute it
 //                        System.out.println(sCurrentLine);
                         printNonEmpty(fs.runCommand(sCurrentLine.split(" ")));
                     } catch (Exception e) {
-                        System.out.println(e.getMessage());
+                        System.out.println("Error running script");
+                        e.printStackTrace();
+                        break;
                     }
                 }
             } catch (FileNotFoundException fe) {

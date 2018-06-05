@@ -1,6 +1,8 @@
 package Shell;
 
 import Shell.Exception.UnexpectedDirectoryException;
+
+import java.io.FileNotFoundException;
 import java.nio.file.FileSystemException;
 import java.nio.file.InvalidPathException;
 import java.nio.file.NoSuchFileException;
@@ -76,10 +78,10 @@ public class FileSystem {
 
                 currDir.remove(line[1]);
                 break;
-            case Constants.LL:   // skip ll for now
-                System.out.println(currDir);
-            case Constants.LS:
+            case Constants.LL:
                 output = currDir.toString();
+            case Constants.LS:
+                // TODO: print files/directory
                 break;
             case Constants.ECHO:
                 StringBuilder sb = new StringBuilder();
@@ -140,9 +142,7 @@ public class FileSystem {
                 assertEQ(3, line.length, "Expected: mv <origin> <destination>");
                 move(line[1], line[2]);
                 break;
-            case "#":
-            case "":
-                break;
+            case "#": case "": break;
             default:
                 throw new IllegalArgumentException("No such command");
         }
@@ -154,25 +154,27 @@ public class FileSystem {
             throw new IllegalArgumentException(errorMsg);
     }
 
-    private void assertIsFile(String path) throws FileSystemException {
-//        var dir = multiDirectory(path);
-
-
-        if (currDir.containsDirectory(path))
+    private GFile assertIsFile(String path) throws FileSystemException {
+        var file = multiDirectory(path);
+        if (!(file instanceof GFile))
             throw new UnexpectedDirectoryException(path + " is actually a directory");
-        if (!currDir.containsFile(path))
-            throw new NoSuchFileException(path + " doesn't exist");
+
+        return (GFile) file;
     }
 
-    // why give me code you didnt test what do you mean i couldnt test it, fix it trying
+    private GDirectory assertIsDirectory(String path) throws FileSystemException {
+        var dir = multiDirectory(path);
+        if (!(dir instanceof GDirectory))
+            throw new UnexpectedDirectoryException(path + " is actually a File");
+
+        return (GDirectory) dir;
+    }
+
     private void processCD(String path) throws InvalidPathException {
         Base location = multiDirectory(path);
-        // is this a file?
-        if (!location.isFile()) {
-            currDir = (GDirectory) location;
-        } else {
+        if (location.isFile())
             throw new InvalidPathException(path, "Can't cd into a file");
-        }
+        currDir = (GDirectory) location;
     }
 
     private GDirectory symbolicLink(String path, GDirectory curr) {
@@ -184,51 +186,97 @@ public class FileSystem {
             case "..":
                 return curr.getParent();
             default:
-                throw new InvalidPathException(path, "Directory Not Found");
+                return null;
         }
     }
 
-    // TODO: refactor everything and make sure it is consistent - Lisa
+    /**
+     * converts some/path/to/Location -> Base for "some/path/to/Location"
+     * @param path some/path/to/Location
+     * @return Base for "some/path/to/Location"
+     * @throws InvalidPathException invalid path
+     */
     private Base multiDirectory(String path) throws InvalidPathException {
-        // Consider same directory first
-        Base curr = currDir;
+        Base curr = symbolicLink(path, currDir);
+        if (curr != null)
+            return curr;
 
-        try {   // test if symbolic link
-            return symbolicLink(path, currDir);
-        } catch (InvalidPathException ignored) {}
-
-        if (!path.contains("/"))
+        if (!path.contains("/"))        // look in current directory only
             if (currDir.contains(path))
                 return currDir.get(path);
             else
                 throw new InvalidPathException(path, "Not found");
 
         // does it start at root
+        curr = currDir;
         if (path.charAt(0) == '/') {
             curr = root;
             path = path.substring(1);
         }
 
         // multi directory support
-        for (String dir : path.split("/"))
-            curr = ((GDirectory) curr).contains(dir) ? ((GDirectory) curr).get(dir) : symbolicLink(dir, (GDirectory) curr);
+        GDirectory gCurr;
+        for (String dir : getPathDirectory(path).split("/")) {
+            if (curr instanceof GFile)
+                throw new InvalidPathException(path, "file in middle of path");
 
-        return curr.isFile() ? (GFile) curr : (GDirectory) curr;
+            gCurr = ((GDirectory) curr);
+            if (gCurr.contains(dir))
+                curr = gCurr.get(dir);
+            else if ((gCurr = symbolicLink(dir, gCurr)) != null)
+                curr = gCurr;
+            else
+                throw new InvalidPathException(path, "Base doesn't exist");
+        }
+
+        if (curr.isFile())
+            throw new InvalidPathException(path, "file in middle of path");
+
+        gCurr = (GDirectory) curr;
+        if ((gCurr = symbolicLink(getPathLocation(path), gCurr)) != null)
+            return gCurr;
+
+        gCurr = (GDirectory) curr;
+        if (!gCurr.contains(getPathLocation(path)))
+            throw new InvalidPathException(path, "Base doesn't exist");
+        return gCurr.get(getPathLocation(path));
     }
 
-    private void move (String src, String dest) throws FileSystemException {
-        Base srcLoc = multiDirectory(src);
-        Base destDir = dest.contains("/") ? multiDirectory(dest.substring(0, dest.lastIndexOf("/"))) : currDir;
-        if (destDir.isFile())
-            throw new UnexpectedDirectoryException(dest + " is not a directory");
+    private void move(String src, String dest) throws FileSystemException, FileNotFoundException {
+        GDirectory srcDir = assertIsDirectory(getPathDirectory(src));
+        if (!srcDir.contains(getPathLocation(src)))
+            throw new FileNotFoundException(src + " is invalid");
 
-        String destFileName = dest.contains("/") ? dest.substring(src.lastIndexOf("/") + 1) : dest;
-        srcLoc.setName(destFileName);
+        GDirectory destDir = assertIsDirectory(getPathDirectory(dest));
+        if (destDir.contains(getPathLocation(src)))
+            throw new FileSystemException("Duplicate Name");
 
-        GDirectory srcDir = dest.contains("/") ? (GDirectory) multiDirectory(src.substring(0, src.lastIndexOf("/"))) : currDir;
+        Base srcLocation = srcDir.get(getPathLocation(src));
+        srcLocation.setName(getPathLocation(dest));
+
         // now actually do the move
         // you now have 2 directories, move the desired file from one to the other
         // remove from src, add to dest
-        ((GDirectory)destDir).add(srcDir.remove(srcLoc.getName()));
+        destDir.add(srcDir.remove(srcLocation.getName()));
+    }
+
+    /**
+     * converts some/path/to/Location -> "some/path/to"
+     * @param path some/path/to/Location
+     * @return "some/path/to"
+     */
+    private String getPathDirectory(String path) {
+        if (path.equals("/"))
+            return "/";
+        return path.contains("/") ? path.substring(0, path.lastIndexOf("/") -1) : "" ;
+    }
+
+    /**
+     * converts some/path/to/Location -> Base for "Location"
+     * @param path some/path/to/Location
+     * @return "Location"
+     */
+    private String getPathLocation(String path) {
+        return path.contains("/") ? path.substring(path.lastIndexOf("/") + 1) : path;
     }
 }
