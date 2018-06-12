@@ -1,5 +1,7 @@
 package Shell.Tests;
 
+import Helpers.FileSystem;
+import Shell.Base;
 import Shell.Constants;
 import Shell.KShell;
 import org.junit.jupiter.api.*;
@@ -13,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class KShellTests {
-    private static KShell kShelly;
+    private static FileSystem<Base> kShelly;
 
     @BeforeAll
     static void initKShelly() {
@@ -37,7 +39,7 @@ class KShellTests {
     @DisplayName("man ls")
     void touchFileTest() throws Exception {
         kShelly.runCommand(Constants.TOUCH,  "FileName");
-        assertEquals(kShelly.baseCount(), 1);
+        assertEquals(kShelly.size(), 1);
         assertTrue(kShelly.contains("FileName"));
     }
 

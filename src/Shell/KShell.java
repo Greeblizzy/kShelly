@@ -1,5 +1,6 @@
 package Shell;
 
+import Helpers.FileSystem;
 import Shell.Exception.UnexpectedDirectoryException;
 import java.io.FileNotFoundException;
 import java.nio.file.FileSystemException;
@@ -7,7 +8,7 @@ import java.nio.file.InvalidPathException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class KShell {
+public class KShell implements FileSystem<Base> {
     private static final Map<String, String> manPages = new HashMap<>();
     private GDirectory root;
     private GDirectory currDir;
@@ -43,11 +44,13 @@ public class KShell {
         return !quit;
     }
 
+    @Override
     public void clearSystem() {
         currDir = root;
         root.clearSystem();
     }
 
+    @Override
     public String runCommand(String... line) throws Exception {
         // String... = an array as runCommand("1", "2", "3") - forces it to be the last param in a method
         String output = "";
@@ -287,11 +290,18 @@ public class KShell {
         return path.contains("/") ? path.substring(path.lastIndexOf("/") + 1) : path;
     }
 
-    public int baseCount() {
+    @Override
+    public int size() {
         return root.getSize();
     }
 
+    @Override
     public boolean contains(String name) {
         return root.contains(name);
+    }
+
+    @Override
+    public Base get(String name) {
+        return root.get(name);
     }
 }
