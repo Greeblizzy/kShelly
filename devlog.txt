@@ -63,7 +63,7 @@ What's next?
 - Work on mv <origin> <destination>
 
 5-30-2018
-- Added ASCII_Letters to Constants
+- Added ASCII_Letters to Shell.Constants
 - Added a HashMap mapping String to ASCII_Letters in FileType
 - Working on reading in PNG extension files
 
@@ -80,3 +80,9 @@ What's next?
 - Worked on mv command
 - Still need to fix the bugs -> Support multi-directory for files/directories
 - TODO: fix the format of ls
+
+6-5-18
+- Fixing multi-directory and move command
+
+6-12-18
+- Initialize JUnit5 test suite

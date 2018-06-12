@@ -1,11 +1,9 @@
 package Shell;
 
 import Shell.Exception.UnexpectedDirectoryException;
-
 import java.io.FileNotFoundException;
 import java.nio.file.FileSystemException;
 import java.nio.file.InvalidPathException;
-import java.nio.file.NoSuchFileException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -34,7 +32,11 @@ public class FileSystem {
     }
 
     public FileSystem() {
-        this.currDir = this.root = new GDirectory("/", null);
+        this(new GDirectory("/", null));
+    }
+
+    public FileSystem(GDirectory root) {
+        this.currDir = this.root = root;
     }
 
     public boolean isRunning() {

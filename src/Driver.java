@@ -38,6 +38,7 @@ public class Driver {
                 e.printStackTrace();
             }
         }
+        System.out.println("Thanks for using kShelly");
     }
 
     private static void printNonEmpty(String str) {

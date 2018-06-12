@@ -1,13 +1,13 @@
 package Shell;
 
-class Constants {
+public class Constants {
     private Constants() {}
 
     // missing info
     static final String missingFileDir = "File/Directory with such name exists";
 
     // commands
-    static final String MAN = "man";
+    public static final String MAN = "man";
     static final String TOUCH = "touch";
     static final String RM = "rm";
     static final String MKDIR = "mkdir";
@@ -24,7 +24,7 @@ class Constants {
     static final String MV = "mv";
 
     // command descriptions
-    static final String MAN_DESC = "prints out a help menu for a given command";
+    public static final String MAN_DESC = "prints out a help menu for a given command";
     static final String TOUCH_DESC = "creates a file named <fileName>";
     static final String RM_DESC = "removes the file named <fileName>";
     static final String MKDIR_DESC = "creates a folder named <directoryName>";

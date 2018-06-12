@@ -34,7 +34,7 @@ public enum FileType implements FileOp {
     private static final Map<Character, String[]> ASCII_mapping = new HashMap<>();
 
     private static final Map<String, FileType> mapping = new HashMap<>();
-    static {
+    static {    // static initializer
         Arrays.stream(FileType.values()).forEach(f -> mapping.put(f.toString(), f));
         ASCII_mapping.put('A', Constants.ASCII_A);
         ASCII_mapping.put('B', Constants.ASCII_B);
