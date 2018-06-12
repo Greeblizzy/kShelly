@@ -1,5 +1,7 @@
 import java.io.*;
 import java.util.*;
+
+import Helpers.pprint;
 import Shell.KShell;
 
 public class Driver {
@@ -16,7 +18,7 @@ public class Driver {
                     try {
                         // for every line in the file, execute it
 //                        System.out.println(sCurrentLine);
-                        printNonEmpty(fs.runCommand(sCurrentLine.split(" ")));
+                        pprint.nonEmpty(fs.runCommand(sCurrentLine.split(" ")));
                     } catch (Exception e) {
                         System.out.println("Error running script");
                         e.printStackTrace();
@@ -33,16 +35,11 @@ public class Driver {
         while (fs.isRunning()) {
             System.out.print("> ");
             try {       // reads input line, stores the split array on space in line
-                printNonEmpty(fs.runCommand(sc.nextLine().split(" ")));
+                pprint.nonEmpty(fs.runCommand(sc.nextLine().split(" ")));
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
         System.out.println("Thanks for using kShelly");
-    }
-
-    private static void printNonEmpty(String str) {
-        if (!str.equals(""))
-            System.out.println(str);
     }
 }

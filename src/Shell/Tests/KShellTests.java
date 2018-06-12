@@ -1,6 +1,7 @@
 package Shell.Tests;
 
 import Helpers.FileSystem;
+import Helpers.pprint;
 import Shell.Base;
 import Shell.Constants;
 import Shell.KShell;
@@ -10,6 +11,7 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -32,15 +34,23 @@ class KShellTests {
     @Test
     @DisplayName("man ls")
     void manLsTest() throws Exception {
-        assertEquals(kShelly.runCommand(Constants.MAN,  Constants.LS), Constants.LS_DESC);
+        assertEquals(Constants.LS_DESC, kShelly.runCommand(Constants.MAN,  Constants.LS));
     }
 
     @Test
-    @DisplayName("man ls")
+    @DisplayName("touch FileName")
     void touchFileTest() throws Exception {
         kShelly.runCommand(Constants.TOUCH,  "FileName");
-        assertEquals(kShelly.size(), 1);
+        assertEquals(1, kShelly.size());
         assertTrue(kShelly.contains("FileName"));
+    }
+
+    // now, the rest is yours -- test every single method by itself
+    @Test
+    @DisplayName("Template")
+    void methodName() throws Exception {
+        kShelly.runCommand("Something");
+        // show me what you learned from the book
     }
 
     // "Integration" Tests with multiple commands
@@ -59,7 +69,8 @@ class KShellTests {
                     String sCurrentLine;
                     while ((sCurrentLine = br.readLine()) != null) {
                         try {
-                            kShelly.runCommand(sCurrentLine.split(" "));
+                            String[] cmd_ = sCurrentLine.split(" ");
+                            kShelly.runCommand(cmd_[0], Arrays.copyOf(cmd_, cmd_.length - 1));
                         } catch (Exception e) {
                             System.out.println("Error running script");
                             e.printStackTrace();
@@ -76,7 +87,7 @@ class KShellTests {
             @Test
             @DisplayName("Existence of members")
             void contentsExist() throws Exception{
-                printNonEmpty(kShelly.runCommand("ll"));
+                pprint.nonEmpty(kShelly.runCommand("ll"));
             }
         }
 
@@ -90,10 +101,5 @@ class KShellTests {
     @AfterEach
     void resetSystem() {
         kShelly.clearSystem();
-    }
-
-    private static void printNonEmpty(String str) {
-        if (!str.equals(""))
-            System.out.println(str);
     }
 }

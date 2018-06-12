@@ -17,8 +17,7 @@ public abstract class Base {
         this.name = name;
     }
 
-    public int getSize()
-    {
+    public int getSize() {
         return size;
     }
     public void setSize(int size)

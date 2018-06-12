@@ -86,3 +86,5 @@ What's next?
 
 6-12-18
 - Initialize JUnit5 test suite
+- Created JUnit template for further use
+- implementing commands enum

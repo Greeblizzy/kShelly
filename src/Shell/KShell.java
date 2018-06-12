@@ -5,6 +5,7 @@ import Shell.Exception.UnexpectedDirectoryException;
 import java.io.FileNotFoundException;
 import java.nio.file.FileSystemException;
 import java.nio.file.InvalidPathException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -51,42 +52,42 @@ public class KShell implements FileSystem<Base> {
     }
 
     @Override
-    public String runCommand(String... line) throws Exception {
-        // String... = an array as runCommand("1", "2", "3") - forces it to be the last param in a method
+    public String runCommand(String cmd, String... kwargs) throws Exception {
+        // String... = an array as runCommand(cmd, "1", "2", "3") - forces it to be the last param in a method
         String output = "";
 
-        switch (line[0].toLowerCase()) {
+        switch (cmd) {
             case Constants.MAN:         // line = ["manPages", "<content>"]
-                assertEQ(2, line.length, "Expected: man <command>");
-                output = manPages.getOrDefault(line[1], "Invalid Command");
+                assertEQ(1, kwargs.length, "Expected: man <command>");
+                output = manPages.getOrDefault(kwargs[0], "Invalid Command");
                 break;
             case Constants.TOUCH:       // line = ["touch", "<fileName>"]
-                assertEQ(2, line.length, "Expected: touch <fileName>");
-                if (currDir.containsDirectory(line[1]))
+                assertEQ(1, kwargs.length, "Expected: touch <fileName>");
+                if (currDir.containsDirectory(kwargs[0]))
                     throw new UnexpectedDirectoryException("Naming Conflict");
 
-                String[] fileName = line[1].split("\\.");
-                currDir.add(new GFile(line[1], fileName.length == 2 ? FileType.get(fileName[1]) : FileType.TXT));
+                String[] fileName = kwargs[0].split("\\.");
+                currDir.add(new GFile(kwargs[0], fileName.length == 2 ? FileType.get(fileName[1]) : FileType.TXT));
                 break;
             case Constants.RM:          // line = ["rm", "<fileName>"]
-                assertEQ(2, line.length, "Expected: rm <fileName>");
-                assertIsFile(line[1]);
+                assertEQ(1, kwargs.length, "Expected: rm <fileName>");
+                assertIsFile(kwargs[0]);
 
-                currDir.remove(line[1]);
+                currDir.remove(kwargs[0]);
                 break;
             case Constants.MKDIR:       // line = ["mkdir", "<directoryName>"]
-                assertEQ(2, line.length, "Expected: mkdir <directoryName>");
-                if (currDir.contains(line[1]))
+                assertEQ(1, kwargs.length, "Expected: mkdir <directoryName>");
+                if (currDir.contains(kwargs[0]))
                     throw new UnexpectedDirectoryException(Constants.missingFileDir);
 
-                currDir.add(new GDirectory(line[1], currDir));
+                currDir.add(new GDirectory(kwargs[0], currDir));
                 break;
             case Constants.RMDIR:
-                assertEQ(2, line.length, "Expected: rmdir <directoryName>");
-                if (!currDir.containsDirectory(line[1]) || !((GDirectory) currDir.get(line[1])).isEmpty())
+                assertEQ(1, kwargs.length, "Expected: rmdir <directoryName>");
+                if (!currDir.containsDirectory(kwargs[0]) || !((GDirectory) currDir.get(kwargs[0])).isEmpty())
                     throw new UnexpectedDirectoryException("Directory not found");
 
-                currDir.remove(line[1]);
+                currDir.remove(kwargs[0]);
                 break;
             case Constants.LL:
                 output = currDir.toString();
@@ -94,16 +95,11 @@ public class KShell implements FileSystem<Base> {
                 // TODO: print files/directory
                 break;
             case Constants.ECHO:
-                StringBuilder sb = new StringBuilder();
-                for (int i = 1; i < line.length; i++)
-                    sb.append(line[i]).append(" ");
-
-                sb.setLength(sb.length() -1);
-                output = sb.toString();
+                output = Arrays.stream(kwargs).reduce((a, b) -> String.format("%s %s", a, b)).orElse("Empty");
                 break;
             case Constants.CD:
-                assertEQ(2, line.length, "Expected: cd <directoryName>");
-                processCD(line[1]);
+                assertEQ(1, kwargs.length, "Expected: cd <directoryName>");
+                processCD(kwargs[0]);
                 break;
             case Constants.PWD:
                 GDirectory temp = currDir;
@@ -117,40 +113,42 @@ public class KShell implements FileSystem<Base> {
                 output = presentWorkingDirectory.toString();
                 break;
             case Constants.WRITE:
-                assertIsFile(line[1]);
+                assertIsFile(kwargs[0]);
 
                 StringBuilder content = new StringBuilder();
-                for (int wordIndex = 2; wordIndex < line.length; wordIndex++)
-                    content.append(line[wordIndex]).append(" ");
+                for (int wordIndex = 1; wordIndex < kwargs.length; wordIndex++)
+                    content.append(kwargs[wordIndex]).append(" ");
 
-                ((GFile) currDir.get(line[1])).append(content.toString());
+                ((GFile) currDir.get(kwargs[0])).append(content.toString());
                 break;
             case Constants.CAT:
-                assertEQ(2, line.length, "Expected: cat <fileName");
-                assertIsFile(line[1]);
+                assertEQ(1, kwargs.length, "Expected: cat <fileName");
+                assertIsFile(kwargs[0]);
 
-                output = ((GFile) currDir.get(line[1])).read();
+                output = ((GFile) currDir.get(kwargs[0])).read();
                 break;
             case Constants.QUIT:
                 quit = true;
                 break;
             case Constants.SH:      // internal script
-                assertEQ(2, line.length, "Expected: sh <script.sh>");
-                assertIsFile(line[1]);
+                assertEQ(1, kwargs.length, "Expected: sh <script.sh>");
+                assertIsFile(kwargs[0]);
 
                 // read the gfile
-                String[] commandLines = ((GFile)currDir.get(line[1])).read().split("\n");
+                String[] commandLines = ((GFile)currDir.get(kwargs[0])).read().split("\n");
                 try {
-                    for (String commandLine : commandLines)
-                        System.out.println(runCommand(commandLine.split(" ")));
+                    for (String commandLine : commandLines) {
+                        String[] cmd_ = commandLine.split(" ");
+                        System.out.println(runCommand(cmd_[0], Arrays.copyOf(cmd_, cmd_.length - 1)));
+                    }
                 } catch (Exception e) {
                     System.out.println(e.getMessage());
                 }
                 break;
             case Constants.MV:
-                assertIsFile(line[1]);
-                assertEQ(3, line.length, "Expected: mv <origin> <destination>");
-                move(line[1], line[2]);
+                assertIsFile(kwargs[0]);
+                assertEQ(2, kwargs.length, "Expected: mv <origin> <destination>");
+                move(kwargs[0], kwargs[1]);
                 break;
             case "#": case "": break;
             default:
@@ -292,7 +290,7 @@ public class KShell implements FileSystem<Base> {
 
     @Override
     public int size() {
-        return root.getSize();
+        return root.size();
     }
 
     @Override

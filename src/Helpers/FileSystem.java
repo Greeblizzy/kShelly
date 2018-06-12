@@ -5,7 +5,7 @@ public interface FileSystem<T> {
     T get(String name);
 
     int size();
-    String runCommand(String... cmd) throws Exception;
+    String runCommand(String cmd, String... kwargs) throws Exception;
 
     void clearSystem();
 }
