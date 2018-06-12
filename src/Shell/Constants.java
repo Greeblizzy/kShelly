@@ -8,20 +8,20 @@ public class Constants {
 
     // commands
     public static final String MAN = "man";
-    static final String TOUCH = "touch";
-    static final String RM = "rm";
-    static final String MKDIR = "mkdir";
-    static final String RMDIR = "rmdir";
-    static final String LS = "ls";
-    static final String LL = "ll";
-    static final String ECHO = "echo";
-    static final String CD = "cd";
-    static final String PWD = "pwd";
-    static final String WRITE = "write";
-    static final String CAT = "cat";
-    static final String QUIT = "quit";
-    static final String SH = "sh";
-    static final String MV = "mv";
+    public static final String TOUCH = "touch";
+    public static final String RM = "rm";
+    public static final String MKDIR = "mkdir";
+    public static final String RMDIR = "rmdir";
+    public static final String LS = "ls";
+    public static final String LL = "ll";
+    public static final String ECHO = "echo";
+    public static final String CD = "cd";
+    public static final String PWD = "pwd";
+    public static final String WRITE = "write";
+    public static final String CAT = "cat";
+    public static final String QUIT = "quit";
+    public static final String SH = "sh";
+    public static final String MV = "mv";
 
     // command descriptions
     public static final String MAN_DESC = "prints out a help menu for a given command";
@@ -29,7 +29,7 @@ public class Constants {
     static final String RM_DESC = "removes the file named <fileName>";
     static final String MKDIR_DESC = "creates a folder named <directoryName>";
     static final String RMDIR_DESC = "removes the folder named <directoryName>";
-    static final String LS_DESC = "lists all files and directories in current folder";
+    public static final String LS_DESC = "lists all files and directories in current folder";
     static final String LL_DESC = "lists all files and directories in greater detail";
     static final String ECHO_DESC = "outputs content to terminal output";
     static final String CD_DESC = "changes directory to given folder";

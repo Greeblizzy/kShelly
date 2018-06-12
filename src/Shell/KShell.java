@@ -7,7 +7,7 @@ import java.nio.file.InvalidPathException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class FileSystem {
+public class KShell {
     private static final Map<String, String> manPages = new HashMap<>();
     private GDirectory root;
     private GDirectory currDir;
@@ -31,16 +31,21 @@ public class FileSystem {
         manPages.put(Constants.MV, Constants.MV_DESC);
     }
 
-    public FileSystem() {
+    public KShell() {
         this(new GDirectory("/", null));
     }
 
-    public FileSystem(GDirectory root) {
+    public KShell(GDirectory root) {
         this.currDir = this.root = root;
     }
 
     public boolean isRunning() {
         return !quit;
+    }
+
+    public void clearSystem() {
+        currDir = root;
+        root.clearSystem();
     }
 
     public String runCommand(String... line) throws Exception {
@@ -280,5 +285,13 @@ public class FileSystem {
      */
     private String getPathLocation(String path) {
         return path.contains("/") ? path.substring(path.lastIndexOf("/") + 1) : path;
+    }
+
+    public int baseCount() {
+        return root.getSize();
+    }
+
+    public boolean contains(String name) {
+        return root.contains(name);
     }
 }

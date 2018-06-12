@@ -1,11 +1,11 @@
 import java.io.*;
 import java.util.*;
-import Shell.FileSystem;
+import Shell.KShell;
 
 public class Driver {
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
-        FileSystem fs = new FileSystem();
+        KShell fs = new KShell();
 
         // read and run scripts
         for (String fileName : args) {

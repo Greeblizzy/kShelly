@@ -1,7 +1,7 @@
 package Shell.Tests;
 
 import Shell.Constants;
-import Shell.FileSystem;
+import Shell.KShell;
 import org.junit.jupiter.api.*;
 
 import java.io.BufferedReader;
@@ -10,13 +10,14 @@ import java.io.FileReader;
 import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class FileSystemTests {
-    private static FileSystem kShelly;
+class KShellTests {
+    private static KShell kShelly;
 
     @BeforeAll
     static void initKShelly() {
-        kShelly = new FileSystem();
+        kShelly = new KShell();
     }
 
     // Unit tests individual commands
@@ -24,6 +25,20 @@ class FileSystemTests {
     @DisplayName("man man")
     void manManTest() throws Exception {
         assertEquals(kShelly.runCommand(Constants.MAN,  Constants.MAN), Constants.MAN_DESC);
+    }
+
+    @Test
+    @DisplayName("man ls")
+    void manLsTest() throws Exception {
+        assertEquals(kShelly.runCommand(Constants.MAN,  Constants.LS), Constants.LS_DESC);
+    }
+
+    @Test
+    @DisplayName("man ls")
+    void touchFileTest() throws Exception {
+        kShelly.runCommand(Constants.TOUCH,  "FileName");
+        assertEquals(kShelly.baseCount(), 1);
+        assertTrue(kShelly.contains("FileName"));
     }
 
     // "Integration" Tests with multiple commands
@@ -68,6 +83,11 @@ class FileSystemTests {
         void runScript_01() {
 
         }
+    }
+
+    @AfterEach
+    void resetSystem() {
+        kShelly.clearSystem();
     }
 
     private static void printNonEmpty(String str) {

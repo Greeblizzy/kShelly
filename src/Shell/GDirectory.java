@@ -1,6 +1,7 @@
 package Shell;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class GDirectory extends Base {
@@ -13,7 +14,7 @@ public class GDirectory extends Base {
         files = new HashMap<>();
     }
 
-    public GDirectory getParent() {
+    GDirectory getParent() {
         return parent;
     }
 
@@ -22,15 +23,15 @@ public class GDirectory extends Base {
         return false;
     }
 
-    public void add(Base b) {
+    void add(Base b) {
         files.put(b.getName(), b);
     }
 
-    public Base remove(String name) {
+    Base remove(String name) {
         return files.remove(name);
     }
 
-    public boolean contains(String name) {
+    boolean contains(String name) {
         return files.containsKey(name);
     }
 
@@ -38,16 +39,24 @@ public class GDirectory extends Base {
         return contains(name) && files.get(name).isFile();
     }
 
-    public boolean containsDirectory(String name) {
+    boolean containsDirectory(String name) {
         return contains(name) && !files.get(name).isFile();
     }
 
-    public Base get(String name) {
+    Base get(String name) {
         return files.get(name);
     }
 
-    public boolean isEmpty() {
+    boolean isEmpty() {
         return files.isEmpty();
+    }
+
+    void clearSystem() {
+        files.clear();
+    }
+
+    public int size() {
+        return files.size();
     }
 
     @Override
