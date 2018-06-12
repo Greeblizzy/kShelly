@@ -1,7 +1,6 @@
 package Shell;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class GDirectory extends Base {
@@ -55,7 +54,7 @@ public class GDirectory extends Base {
         files.clear();
     }
 
-    public int size() {
+    int size() {
         return files.size();
     }
 

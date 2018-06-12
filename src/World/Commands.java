@@ -1,4 +1,7 @@
-package Shell;
+package World;
+
+import Shell.Constants;
+import Shell.Descriptor;
 
 public enum Commands implements Descriptor<String> {
     MAN {
@@ -11,5 +14,5 @@ public enum Commands implements Descriptor<String> {
         public String getDescription() {
             return Constants.MAN_DESC;
         }
-    },
+    }, // TODO: fill in the rest of the commands
 }

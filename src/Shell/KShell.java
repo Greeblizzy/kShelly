@@ -2,6 +2,7 @@ package Shell;
 
 import Helpers.FileSystem;
 import Shell.Exception.UnexpectedDirectoryException;
+
 import java.io.FileNotFoundException;
 import java.nio.file.FileSystemException;
 import java.nio.file.InvalidPathException;
@@ -37,7 +38,7 @@ public class KShell implements FileSystem<Base> {
         this(new GDirectory("/", null));
     }
 
-    public KShell(GDirectory root) {
+    private KShell(GDirectory root) {
         this.currDir = this.root = root;
     }
 
@@ -56,6 +57,7 @@ public class KShell implements FileSystem<Base> {
         // String... = an array as runCommand(cmd, "1", "2", "3") - forces it to be the last param in a method
         String output = "";
 
+        // TODO: convert into World.Commands
         switch (cmd) {
             case Constants.MAN:         // line = ["manPages", "<content>"]
                 assertEQ(1, kwargs.length, "Expected: man <command>");
